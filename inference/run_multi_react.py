@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import concurrent.futures
 from tqdm import tqdm
@@ -189,6 +190,7 @@ if __name__ == "__main__":
                     with write_locks[rollout_idx]:
                         with open(output_file, "a", encoding="utf-8") as f:
                             f.write(json.dumps(result, ensure_ascii=False) + "\n")
+                            print(f"wrote result for rollout {rollout_idx} to {output_file}")
                 except concurrent.futures.TimeoutError:
                     question = task_info["item"].get("question", "")
                     print(f'Timeout (>1800s): "{question}" (Rollout {rollout_idx})')
@@ -219,6 +221,7 @@ if __name__ == "__main__":
                     }
                     print("===============================")
                     print(error_result)
+                    print(traceback.format_exc())
                     print("===============================")
                     with write_locks[rollout_idx]:
                         with open(output_file, "a", encoding="utf-8") as f:
